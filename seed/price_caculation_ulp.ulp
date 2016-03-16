@@ -1,0 +1,627 @@
+﻿#usage "<b>Seeed_Price_Caculation_ULP® Price calculation and order tool</b>\n"
+       "<p>"
+       
+////////////////////////////////////////////////////////////
+//             Seeed_Price_Caculation_ULP(R) Preiskalkulator                              
+///////////////////////////////////////////////////////////
+//
+//
+   string VERSION = "1.01";
+   #require 5.1001
+//
+///////////////////////////////////////////////////////////
+
+
+// Handling change of internal units V5 -> V6:
+int UFactor = (EAGLE_VERSION < 6 && EAGLE_RELEASE < 12) ? 1 : 32;
+
+// TESTABFRAGEBOX
+//dlgMessageBox(U2AbmessStr(MinTrack));
+
+
+// -----------------------
+// Variablen
+// ------------------------
+
+int NrUsedLayers;                 // Anzahl Lagen
+real XMin = REAL_MAX,             // Leiterplatten Abmessung
+XMax = -REAL_MAX, 
+YMin = REAL_MAX, 
+YMax = -REAL_MAX;     
+
+int MaterialStaerke;              // Materialstärke
+int Cu_Staerke_aussen = INT_MAX;  // Kupferstärke Aussen
+int Cu_Staerke_innen = INT_MAX;   // Kupferstärke Innen 
+
+int MinTrack = INT_MAX;           // Kleinste Leiterbahnstärke
+int MinGap = INT_MAX;             // Kleinster Leiterbahnabstand
+int MinDrill = INT_MAX;           // Kleinste Bohrung
+
+string Stopplack;                 // Lötstopplack
+string Posi;                      // Posi
+
+int NrBlind_Burried;              // Blind/Buried
+
+int NrSmdPadsBS;                  // SMD Pads BS
+int NrSmdPadsLS;                  // SMD Pads LS
+string Achtung;
+int Export = 1;
+string DruFile;
+string PCBPOOLURL()               {if (language() == "de") return "http://www.seeedstudio.com/service/index.php?r=pcb"; else return "http://www.seeedstudio.com/service/index.php?r=pcb";}
+string I2Str(int i)               {string str;sprintf(str, "%d", i);return str;}
+string U2AbmessStr(int i)         {string str;sprintf(str, "%f", u2mm(i));return str;}
+string U2CuStr(int i)             {string str;sprintf(str, "%f", i/(10.0 * UFactor) );return str;}
+int Str2U(string s)               {if (strstr(s, "mm") > 0) return int(strtod(s) * 10000 * UFactor);if (strstr(s, "mil") > 0) return int(strtod(s) * 10 * UFactor * 25.4);if (strstr(s, "in") > 0) return int(strtod(s) * 10000 * UFactor * 25.4);if (strstr(s, "mic") > 0) return int(strtod(s) * 10 * UFactor);return 0;}
+int Within(int val, int l, int u) {return (val > l) && (val < u);}
+
+
+//-------------------------------------------------
+// Sprachunterstützung Dialoge: Deutsch/English
+//-------------------------------------------------
+
+string Uebersetzung[] = {
+  "en\x"
+  "de\x",
+
+  "Layer:\x"
+  "Lagen:\x",
+
+  "Determined parameter:\x"
+  "Ermittelte Leiterplatten Parameter:\x",
+
+  "Soldermask:\x"
+  "Stopplack:\x",
+
+  "Silkscreen:\x"
+  "Positionsdruck:\x",
+
+  "SMD Pads top:\x"
+  "SMD Pads BS\x",
+
+  "SMD Pads bottom:\x"
+  "SMD Pads LS\x",
+
+  "PCB size X:\x"
+  "Leiterplattengröße X\x",
+
+  "PCB size Y:\x"
+  "Leiterplattengröße Y\x",
+
+  "Material thickness:\x"
+  "Materialstärke\x",
+
+  "CU thickness:\x"
+  "Kupferstärke\x",
+
+  "Min. trace width:\x"
+  "Min. Leiterbahnstärke\x",
+
+  "Min. gap:\x"
+  "Min. Leiterbahnabstand\x",
+
+  "Min. drill size:\x"
+  "Min. Bohrdurchmesser\x",
+
+  "Should you wish to change any of these parameters, you can do so after following the link below.\x"
+  "Änderungen der Parameter können Sie auf der folgenden Seite vornehmen.\x",
+
+  "Seeed_Price_Caculation_ULP® Price Calculation\x"
+  "Seeed_Price_Caculation_ULP® Preis Kalkulation\x",
+
+  "Seeed_Price_Caculation_ULP® Price calculation\x"
+  "Seeed_Price_Caculation_ULP® Preiskalkulator\x",
+
+  "Please start within the Layout editor !\x"
+  "Bitte starten Sie vom Layout-Editor aus !\x",
+
+  "Please use dimension layer for the board outline.\x"
+  "Bitte benutzen Sie den Dimension-Layer, um die Leiterplattenumrisse festzulegen.\x",
+
+  "Checking PCB parameters\x"
+  "Ermittle Leiterplatten Parameter\x",
+
+  "Could not determine from outer layers.\x"
+  "Konnte anhand des Aussen-Layers nicht ermittelt werden.\x",
+
+  "Estimation is based on the outer layers.\x"
+  "Schätzung basiert auf Aussen-Lagen.\x",
+
+  "Minimum trace width could not be determined.\x"
+  "Kleinste Leiterbahnbreite konnte nicht ermittelt werden.\x",
+
+  "No copper found in the signal layers. \x"
+  "In den Signal-Lagen konnte kein Kupfer gefunden werden. \x",
+
+  "Impossible to get PCB width and length from the dimension layer.\x"
+  "Leiterplattenabmessung konnte nicht bestimmt werden anhand des Dimension-Layers.\x",
+
+  "Layout incomplete:\x"
+  "Ihr Layout ist unvollständig:\x",
+
+  "Wire(s) and/or polygon(s) with zero width found on signal layer(s). \x"
+  "Leiterbahnen und/oder Polygone mit der Breite 0 in Signal-Lage(n) gefunden. \x",
+
+  "None of the signal layers are used. Number of layers could not be determined.\x"
+  "Keine der Signal-Lagen wurde verwendet. Lagenanzahl konnte nicht bestimmt werden.\x",
+
+  "There are still airwires left.\x"
+  "Es sind noch Luftlinien vorhanden.\x",
+
+  "Design rules wrong\x"
+  "Falsche Design Regeln\x",
+
+  "Design rules not known\x"
+  "Unbekannte Design Regeln", 
+
+  "Achtung:\x"
+  "ACHTUNG:\x",
+
+  "Both Sides\x"
+  "Beidseitig\x",
+
+  "Top Side\x"
+  "BS\x",
+
+  "Bottom Side\x"
+  "LS\x",
+
+  "None\x"
+  "ohne\x",
+
+  "+Close\x"
+  "+Schliessen\x",
+
+  "Free of commission:\x"
+  "Provisionsfrei:\x",
+
+  "If board specifications are not Seeed_Price_Caculation_ULP® compatible, a RFQ form will pop up.\x"
+  "Sollten die Parameter nicht Seeed_Price_Caculation_ULP® kompatibel sein, erscheint ein Anfrageformular.\x"
+
+
+};
+
+
+string Sprache = language();
+if (Sprache != "de") Sprache = "en";
+int SprachID = strstr(Uebersetzung[0], Sprache) / 3;
+string xlate(string t) {
+string trans = lookup(Uebersetzung, t, SprachID, '\x');
+return trans ? trans : t;
+}
+
+
+
+//===================================
+// Kalkulations Parameter Ermittlung
+//===================================
+
+int PCBAbmessung() {
+  return (XMin < REAL_MAX) && (XMax > -REAL_MAX) && (YMin < REAL_MAX) && (YMax > -REAL_MAX) && (XMax - XMin > 10000) && (YMax - YMin > 10000); 
+}
+
+void UpdateBBoxBox(int xmin, int ymin, int xmax, int ymax) {
+   XMin = min(XMin, xmin);
+   XMax = max(XMax, xmax);
+   YMin = min(YMin, ymin);
+   YMax = max(YMax, ymax);
+}
+
+void UpdateBBoxWire(UL_WIRE W, int layer) {
+  if (W.layer == layer) {
+     real w2 = W.width/2;
+     real xmin = min(W.x1 - w2, W.x2 - w2), ymin = min(W.y1 - w2, W.y2 - w2);
+     real xmax = max(W.x1 + w2, W.x2 + w2), ymax = max(W.y1 + w2, W.y2 + w2);
+     if (W.arc)
+        if (W.arc.angle2 > 360)
+           xmax = W.arc.xc + W.arc.radius + w2;
+        else if (((W.arc.angle1 <  90) && (W.arc.angle2 >  90)) || (W.arc.angle2 > 450))
+           ymax = W.arc.yc + W.arc.radius + w2;
+        else if (((W.arc.angle1 < 180) && (W.arc.angle2 > 180)) || (W.arc.angle2 > 540))
+           xmin = W.arc.xc - W.arc.radius - w2;
+        else if (((W.arc.angle1 < 270) && (W.arc.angle2 > 270)) || (W.arc.angle2 > 630))
+           ymin = W.arc.yc - W.arc.radius - w2;
+     UpdateBBoxBox(xmin, ymin, xmax, ymax);
+  }
+}
+
+void UpdateBBoxCircle(UL_CIRCLE C, int layer) {
+   if (C.layer == layer) {
+      real w2 = C.width/2;
+      UpdateBBoxBox(C.x - C.radius - w2, C.y - C.radius - w2, C.x + C.radius + w2, C.y + C.radius + w2);
+   }
+}
+
+void UpdateBBox(int layer, int el_origin) {
+   board(B) {
+      B.wires(W) UpdateBBoxWire(W, layer);
+      B.circles(C) UpdateBBoxCircle(C, layer);
+      B.elements(E) {
+         if (el_origin) UpdateBBoxBox(E.x, E.y, E.x, E.y);  
+         E.package.wires(W) UpdateBBoxWire(W, layer);
+         E.package.circles(C) UpdateBBoxCircle(C, layer);
+      }
+  }
+}
+
+void GetDruParams() {
+   string lines[];
+   int nrlines = fileread(lines, DruFile);
+   if (nrlines == 0) dlgMessageBox("Error reading design rules !");
+     for (int i = 0; i < nrlines; ++i) {
+      string words[];
+      int nrwords = strsplit(words, lines[i], ' ');
+        if (nrwords < 3) continue;    
+         string keyword = words[0];
+          if (keyword == "mtCopper") {
+           Cu_Staerke_aussen = Str2U(words[2]);
+           MaterialStaerke += Cu_Staerke_aussen;
+             if (nrwords != 18) dlgMessageBox(xlate("Design rules wrong"));
+              for (int j = 3, ct = Str2U(words[j]); j < NrUsedLayers + 1; ct = Str2U(words[++j])) {
+              Cu_Staerke_innen = min(ct, Cu_Staerke_innen);
+             MaterialStaerke += ct;
+         }
+         if (NrUsedLayers >= 2) {
+            ct = Str2U(words[17]);
+            Cu_Staerke_aussen = min(ct, Cu_Staerke_aussen);
+            MaterialStaerke += ct;
+         }
+      }
+      else if (keyword == "mtIsolate") {
+         if (nrwords != 17) dlgMessageBox(xlate("Design rules not known"));
+         for (int k = 2; k < max(3, NrUsedLayers + 1); ++k) {
+            MaterialStaerke += Str2U(words[k]);
+         }
+      }
+      else if (keyword == "mdSmdSmd")
+         MinGap = Str2U(words[2]);
+   }
+}
+
+void CalcMinTrack() {
+   board(B) {
+    B.wires(W) if (W.layer <= 16) MinTrack = min(W.width, MinTrack);
+    B.signals(S) {
+    S.polygons(P) if (P.layer <= 16) MinTrack = min(P.width, MinTrack);
+    S.wires(W) if (W.layer <= 16) MinTrack = min(W.width, MinTrack);
+   }
+ }
+}
+
+void CheckHoles() {
+   int idx[], start[], end[], k;
+   board(B) {
+      B.holes(H) MinDrill = min(MinDrill, H.drill);
+      B.signals(S) S.vias(V) {
+         MinDrill = min(MinDrill, V.drill);
+         if ((V.start > 1) || (V.end < 16)) {
+            start[k] = V.start;
+            end[k] = V.end;
+            ++k;
+         }
+      }
+      B.elements(E) {
+         E.package.contacts(C) if (C.pad)
+            MinDrill = min(MinDrill, C.pad.drill);
+         E.package.holes(H) MinDrill = min(MinDrill, H.drill);
+      }
+   }
+   // NrBlind_Burried
+   sort(k, idx, start, end);
+   for (int l = 0, cur_s = 0, cur_e = 0; l < k; ++l)
+      if ((start[idx[l]] != cur_s) || (end[idx[l]] != cur_e)) {
+         ++NrBlind_Burried;
+         cur_s = start[idx[l]];
+         cur_e = end[idx[l]];
+      }
+}
+
+void GetPCBParams() {
+   // Check out layers:
+   int smask_top, smask_bottom, silk_top, silk_bottom, finish;
+   board(B) B.layers(L)
+      if (L.used)
+         if (L.number <= 16) ++NrUsedLayers;
+         else if (L.number == LAYER_TSTOP) smask_top = 1;
+         else if (L.number == LAYER_BSTOP) smask_bottom = 1;
+         else if (L.number == LAYER_TPLACE) silk_top = 1;    
+         else if (L.number == LAYER_BPLACE) silk_bottom = 1; 
+   Stopplack = smask_top ? (smask_bottom ? xlate("Both Sides") : xlate("Top Side")) :
+                             (smask_bottom ? xlate("Bottom Side") : xlate("None"));
+   Posi = (silk_top) ? (silk_bottom ? xlate("Both Sides") : xlate("Top Side")) :
+                                  (silk_bottom ? xlate("Bottom Side") : xlate("None"));
+   if (NrUsedLayers == 0)
+      Achtung += "<li>" + xlate("None of the signal layers are used. Number of layers could not be determined.") + "</li>";
+
+
+   // Board outlines:
+ 
+  UpdateBBox(LAYER_DIMENSION, 0);
+   if (!PCBAbmessung()) {
+      Achtung += "<li>" + xlate("Impossible to get PCB width and length from the dimension layer.");
+      UpdateBBox(LAYER_TOP, 1);
+      UpdateBBox(LAYER_BOTTOM, 1);
+      if (!PCBAbmessung())
+         Achtung += xlate("Could not determine from outer layers.") +
+                     xlate("Please use dimension layer for the board outline.") + "</li>";
+      else
+         Achtung += xlate("Estimation is based on the outer layers.") + "</li>";
+   }
+
+   CalcMinTrack();
+   if (MinTrack == INT_MAX)
+      Achtung += "<li>" + xlate("No copper found in the signal layers. ") +
+                           xlate("Minimum trace width could not be determined.") + "</li>";
+   if (MinTrack == 0)
+      Achtung += "<li>" + xlate("Wire(s) and/or polygon(s) with zero width found on signal layer(s). ") +
+                           xlate("Minimum trace width could not be determined.") + "</li>";
+  GetDruParams();
+   CheckHoles();
+
+   int air_wires = 0;
+   {  // Check if there are still airwires:
+      board(B) {
+         B.wires(W) if (W.layer == LAYER_UNROUTED) air_wires = 1;
+         B.signals(S) {
+            S.polygons(P) if (P.layer == LAYER_UNROUTED) air_wires = 1;
+            S.wires(W) if (W.layer == LAYER_UNROUTED) air_wires = 1;
+         }
+      }
+   }
+   if (air_wires)
+      Achtung += "<li>" + xlate("There are still airwires left.") + "</li>";
+
+   // Count SMD pads
+   board(B) B.elements(E) E.package.contacts(C)
+      if (C.smd)
+         if (C.smd.layer == LAYER_TOP) ++NrSmdPadsBS;
+         else ++NrSmdPadsLS;
+}
+
+string UebergabeParameter()
+{
+
+string Uebergabe_einzelparameter = "&" +
+"numLayers=" + I2Str(NrUsedLayers) +
+"&MaterialStaerke=" + U2AbmessStr(MaterialStaerke) +
+"&Cu_Staerke_aussen=" + U2CuStr(Cu_Staerke_aussen) +
+"&Stopplack=" + Stopplack +
+"&Posi=" + Posi;
+if (PCBAbmessung())
+   Uebergabe_einzelparameter +=    "&boardWidth=" + U2AbmessStr(XMax - XMin) +
+  "&boardLength=" + U2AbmessStr(YMax - YMin);
+if (Within(Cu_Staerke_innen, 0, INT_MAX))
+    Uebergabe_einzelparameter +=    "&Cu_Staerke_innen=" + U2CuStr(Cu_Staerke_innen);
+if (Within(MinTrack, 0, INT_MAX))
+    Uebergabe_einzelparameter +=    "&MinTrack=" + U2AbmessStr(MinTrack);
+if (MinGap < INT_MAX)
+    Uebergabe_einzelparameter +=    "&MinGap=" + U2AbmessStr(MinGap);
+if (MinDrill < INT_MAX)
+   	Uebergabe_einzelparameter +=    "&MinDrill=" + U2AbmessStr(MinDrill);
+// Uebergabe_einzelparameter +=    "&numSMDPadsBS=" + I2Str(NrSmdPadsBS);
+// Uebergabe_einzelparameter +=    "&numSMDPadsLS=" + I2Str(NrSmdPadsLS); 
+return Uebergabe_einzelparameter;
+}
+
+//=================================
+//
+// Ausgabe
+//
+//=================================
+
+
+for (int i = 1; i <= argc; ++i) {if (argv[i] == "-noexp") Export = 0;}
+  if (board) {
+   string dir = filedir(argv[0]);
+   board(B) DruFile = dir + "dl-" + filename(filesetext(B.name, ".dru"));
+   if (Export)
+   exit("DRC SAVE '" + DruFile + "';\nRUN '" + argv[0] + "' -noexp");
+   status(xlate("Checking PCB parameters"));
+   GetPCBParams();
+
+   if (Achtung) {
+      string acht = xlate("Layout incomplete:") + "<ul>" + "<li>" + Achtung + "</ul>";
+      Achtung = acht;
+   }
+
+string def_lbr = "marks";  // define a library name to export also place coordinates
+
+int wasSmd = 0;
+int wasSmdTop = 0;
+int wasSmdBottom = 0;
+
+board(B) {
+    B.elements(E) 
+    {
+      E.package.contacts(C) 
+      {
+         if (C.smd && C.smd.layer == 1)
+         {
+            wasSmdTop++;
+            break;
+         }
+
+         if (C.smd && C.smd.layer == 16)
+         {
+            wasSmdBottom++;
+            break;
+         }
+      }
+    }
+}
+
+wasSmd = wasSmdTop + wasSmdBottom;
+
+int wasTht = 0;
+int wasThtTop = 0;
+int wasThtBottom = 0;
+
+board(B) {
+    B.elements(E) 
+    {
+      E.package.contacts(C) 
+      {
+        if (!C.smd) 
+        {
+          if ( ( C.pad.flags & PAD_FLAG_STOP ) == 1 )
+          {
+             if (E.mirror == 0) {wasThtTop++;}
+             else {wasThtBottom++;}
+             break;
+          }
+        }
+      }
+    }
+}
+
+wasTht = wasThtTop + wasThtBottom;
+
+string BestueckungBeidseitig;
+if ((wasSmdTop > 0 || wasThtTop > 0) && (wasSmdBottom > 0 || wasThtBottom > 0)) {BestueckungBeidseitig="1";}
+
+// Link zu Seeed Fusion Service
+string Dateiname;
+board(B) Dateiname = filename(B.name);
+//string http = "<b><a href=\"" + PCBPOOLURL() + UebergabeParameter() + "&filename=" + Dateiname + "&smdanzahl=" + I2Str(wasSmd) + "&thtanzahl=" + I2Str(wasTht) + "&BestueckungBeidseitig=" + BestueckungBeidseitig + "\">" + xlate("Seeed Fusion Service® Price calculation") + "</b>";
+string http = "<b><a href=\"" + PCBPOOLURL() + UebergabeParameter() + "&filename=" + Dateiname + "&smdanzahl=" + I2Str(wasSmd) + "&thtanzahl=" + I2Str(wasTht) + "&BestueckungBeidseitig=" + BestueckungBeidseitig + "&eagle_ulp=" + VERSION + "\">" + xlate("Seeed Fusion Service® Price calculation") + "</b>";
+string http_PCBA = "<b><a href=\"" + "http://support.seeedstudio.com/knowledgebase/articles/763671-fusion-pcba-check-list" + "\">" + xlate("PCBA suggestions") + "</b>";
+int ret = dlgDialog(xlate("Seeed Fusion Service® Price Calculation") + "-" + "Version " + VERSION)
+
+{
+
+dlgHBoxLayout dlgSpacing(470);
+
+if (Achtung)
+  dlgHBoxLayout
+  dlgGroup(xlate("Achtung:"))
+  dlgLabel(Achtung);
+ 
+ 
+// The main function of this ULP
+
+  dlgGroup(xlate("Main Function:")) {
+  dlgHBoxLayout {
+	dlgLabel(xlate("This ULP is allowing you to caculate the price or order your PCB/PCBA board faster and easier."));
+	dlgLabel(" ");
+    }
+  }
+
+// Anzeigen der PARAMETER
+
+  dlgGroup(xlate("Determined parameter:")) {    // Anfang des Grouprahmens Parameter
+  dlgHBoxLayout {
+	dlgLabel(xlate("Layer(1/2/4):"));
+	dlgLabel(I2Str(NrUsedLayers));
+	dlgLabel(" ");
+    }
+
+  dlgHBoxLayout {
+	dlgLabel(xlate("Soldermask:"));
+        dlgLabel(Stopplack, 1);
+	dlgLabel(" ");
+    }
+
+  dlgHBoxLayout {
+	dlgLabel(xlate("Silkscreen(width≥0.1524mm/length≥1mm):"));
+        dlgLabel(Posi, 1);
+	dlgLabel(" ");
+    }
+
+  dlgHBoxLayout {
+	dlgLabel(xlate("SMDs:"));
+        dlgLabel(I2Str(wasSmd),1);
+	dlgLabel(" ");
+    }
+
+  dlgHBoxLayout {
+	dlgLabel(xlate("THTs:"));
+        dlgLabel(I2Str(wasTht),1);
+	dlgLabel(" ");
+    }
+
+
+  dlgHBoxLayout {
+   if (PCBAbmessung())
+	dlgLabel(xlate("PCB size X(≥10mm):"));
+        dlgLabel(U2AbmessStr(XMax - XMin),1);
+	dlgLabel("mm");
+
+    }
+
+
+  dlgHBoxLayout {
+   if (PCBAbmessung())
+	dlgLabel(xlate("PCB size Y(≥10mm):"));
+      dlgLabel(U2AbmessStr(YMax - YMin),1);
+	dlgLabel("mm");
+    }
+
+
+  dlgHBoxLayout {
+	dlgLabel(xlate("Material thickness(0.6/0.8/1.0/1.2/1.6/2.0):"));    
+	dlgLabel(U2AbmessStr(MaterialStaerke),1);
+	dlgLabel("mm");
+  }
+
+  dlgHBoxLayout {
+	dlgLabel(xlate("CU thickness(35um/70um):"));
+             dlgLabel(U2CuStr(Cu_Staerke_aussen),1);
+            	 dlgLabel("µm");
+    }
+
+  dlgHBoxLayout {
+  if (Within(MinTrack, 0, INT_MAX))
+	dlgLabel(xlate("Min. trace width(≥0.1524mm):"));
+      dlgLabel(U2AbmessStr(MinTrack),1);
+	dlgLabel("mm");
+    }
+
+  dlgHBoxLayout {
+   if (MinGap < INT_MAX)
+	dlgLabel(xlate("Min. gap(≥0.1524mm):"));
+      dlgLabel(U2AbmessStr(MinGap),1);
+	dlgLabel("mm");
+    }
+
+  dlgHBoxLayout {
+   if (MinDrill < INT_MAX)
+	dlgLabel(xlate("Min. drill size(≥0.3mm):"));
+      dlgLabel(U2AbmessStr(MinDrill),1);
+	dlgLabel("mm");
+    }
+
+  dlgHBoxLayout {
+	dlgLabel(" ");
+
+    }
+
+}   // Ende des Grouprahmens
+
+
+dlgGroup(xlate("Above specifications on the left column is just for your reverence, click below link to check the price or change the parameter.")) {
+  // Link zum Seeed Fusion Service(R) Kalkulator
+    dlgHBoxLayout {
+    dlgStretch(1);
+    dlgLabel(http, 1);  
+
+    dlgStretch(1);
+
+    }
+  }
+
+
+  dlgGroup(xlate("Pleaase keep our PCBA suggestions in mind while design.")) {
+  // Link PCBA suggestions
+    dlgHBoxLayout {
+    dlgStretch(1);
+    dlgLabel(http_PCBA, 1);  
+
+    dlgStretch(1);
+    dlgPushButton(xlate("+Close")) dlgReject();
+    }
+  }
+  
+   };
+   exit(ret);
+}
+else
+   dlgMessageBox(xlate("Please start within the Layout editor !"));
