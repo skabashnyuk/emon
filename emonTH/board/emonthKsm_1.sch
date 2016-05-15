@@ -6423,7 +6423,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <variantdefs>
 </variantdefs>
 <classes>
-<class number="0" name="default" width="0" drill="0">
+<class number="0" name="default" width="0.3" drill="0.5">
+<clearance class="0" value="0.3"/>
 </class>
 </classes>
 <parts>

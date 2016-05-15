@@ -1411,10 +1411,11 @@ for trimmer refence see : &lt;u&gt;www.electrospec-inc.com/cross_references/trim
 <variantdefs>
 </variantdefs>
 <classes>
-<class number="0" name="default" width="0" drill="0">
+<class number="0" name="default" width="0.3" drill="0.5">
+<clearance class="0" value="0.3"/>
 </class>
 </classes>
-<designrules name="default">
+<designrules name="SeeedStudio_2layer_DRU_no_angle_20140221">
 <description language="de">&lt;b&gt;EAGLE Design Rules&lt;/b&gt;
 &lt;p&gt;
 Die Standard-Design-Rules sind so gewählt, dass sie für 
@@ -1429,26 +1430,28 @@ a wide range of applications. Your particular design
 may have different requirements, so please make the
 necessary adjustments and save your customized
 design rules under a new name.</description>
+<description language="zh">&lt;b&gt;Seeed Studio EAGLE Design Rules&lt;/b&gt;
+</description>
 <param name="layerSetup" value="(1*16)"/>
-<param name="mtCopper" value="0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm"/>
-<param name="mtIsolate" value="1.5mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm"/>
-<param name="mdWireWire" value="8mil"/>
-<param name="mdWirePad" value="8mil"/>
-<param name="mdWireVia" value="8mil"/>
-<param name="mdPadPad" value="8mil"/>
-<param name="mdPadVia" value="8mil"/>
-<param name="mdViaVia" value="8mil"/>
-<param name="mdSmdPad" value="8mil"/>
-<param name="mdSmdVia" value="8mil"/>
-<param name="mdSmdSmd" value="8mil"/>
+<param name="mtCopper" value="0.035mm 0.0175mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.035mm 0.0175mm 0.035mm"/>
+<param name="mtIsolate" value="1.5mm 1.1mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm 0.15mm 0.2mm"/>
+<param name="mdWireWire" value="6mil"/>
+<param name="mdWirePad" value="6mil"/>
+<param name="mdWireVia" value="6mil"/>
+<param name="mdPadPad" value="6mil"/>
+<param name="mdPadVia" value="6mil"/>
+<param name="mdViaVia" value="6mil"/>
+<param name="mdSmdPad" value="0mil"/>
+<param name="mdSmdVia" value="0mil"/>
+<param name="mdSmdSmd" value="0mil"/>
 <param name="mdViaViaSameLayer" value="8mil"/>
 <param name="mnLayersViaInSmd" value="2"/>
-<param name="mdCopperDimension" value="40mil"/>
-<param name="mdDrill" value="8mil"/>
+<param name="mdCopperDimension" value="10mil"/>
+<param name="mdDrill" value="10mil"/>
 <param name="mdSmdStop" value="0mil"/>
-<param name="msWidth" value="10mil"/>
-<param name="msDrill" value="24mil"/>
-<param name="msMicroVia" value="9.99mm"/>
+<param name="msWidth" value="6mil"/>
+<param name="msDrill" value="12mil"/>
+<param name="msMicroVia" value="12mil"/>
 <param name="msBlindViaRatio" value="0.5"/>
 <param name="rvPadTop" value="0.25"/>
 <param name="rvPadInner" value="0.25"/>
@@ -1463,9 +1466,9 @@ design rules under a new name.</description>
 <param name="rlMaxPadInner" value="20mil"/>
 <param name="rlMinPadBottom" value="10mil"/>
 <param name="rlMaxPadBottom" value="20mil"/>
-<param name="rlMinViaOuter" value="8mil"/>
+<param name="rlMinViaOuter" value="6mil"/>
 <param name="rlMaxViaOuter" value="20mil"/>
-<param name="rlMinViaInner" value="8mil"/>
+<param name="rlMinViaInner" value="6mil"/>
 <param name="rlMaxViaInner" value="20mil"/>
 <param name="rlMinMicroViaOuter" value="4mil"/>
 <param name="rlMaxMicroViaOuter" value="20mil"/>
@@ -1473,16 +1476,16 @@ design rules under a new name.</description>
 <param name="rlMaxMicroViaInner" value="20mil"/>
 <param name="psTop" value="-1"/>
 <param name="psBottom" value="-1"/>
-<param name="psFirst" value="-1"/>
+<param name="psFirst" value="0"/>
 <param name="psElongationLong" value="100"/>
 <param name="psElongationOffset" value="100"/>
 <param name="mvStopFrame" value="1"/>
 <param name="mvCreamFrame" value="0"/>
-<param name="mlMinStopFrame" value="4mil"/>
-<param name="mlMaxStopFrame" value="4mil"/>
+<param name="mlMinStopFrame" value="2mil"/>
+<param name="mlMaxStopFrame" value="2mil"/>
 <param name="mlMinCreamFrame" value="0mil"/>
 <param name="mlMaxCreamFrame" value="0mil"/>
-<param name="mlViaStopLimit" value="0mil"/>
+<param name="mlViaStopLimit" value="100mil"/>
 <param name="srRoundness" value="0"/>
 <param name="srMinRoundness" value="0mil"/>
 <param name="srMaxRoundness" value="0mil"/>
@@ -1493,7 +1496,7 @@ design rules under a new name.</description>
 <param name="checkGrid" value="0"/>
 <param name="checkAngle" value="0"/>
 <param name="checkFont" value="1"/>
-<param name="checkRestrict" value="1"/>
+<param name="checkRestrict" value="0"/>
 <param name="useDiameter" value="13"/>
 <param name="maxErrors" value="50"/>
 </designrules>
@@ -1501,7 +1504,7 @@ design rules under a new name.</description>
 <pass name="Default">
 <param name="RoutingGrid" value="50mil"/>
 <param name="AutoGrid" value="1"/>
-<param name="Efforts" value="0"/>
+<param name="Efforts" value="2"/>
 <param name="TopRouterVariant" value="1"/>
 <param name="tpViaShape" value="round"/>
 <param name="PrefDir.1" value="a"/>
@@ -1519,7 +1522,7 @@ design rules under a new name.</description>
 <param name="PrefDir.13" value="0"/>
 <param name="PrefDir.14" value="0"/>
 <param name="PrefDir.15" value="0"/>
-<param name="PrefDir.16" value="a"/>
+<param name="PrefDir.16" value="0"/>
 <param name="cfVia" value="8"/>
 <param name="cfNonPref" value="5"/>
 <param name="cfChangeDir" value="2"/>
@@ -1596,7 +1599,9 @@ design rules under a new name.</description>
 <elements>
 <element name="ARDUINO" library="Arduino-clone" package="ABK-PRO-MINI" value="ABK-PRO-MINI" x="11.91" y="33.91"/>
 <element name="RFM69" library="Eagle-JeeLabs" package="RFM12B/69CW" value="RFM12B/69CW" x="36.45" y="11.89"/>
-<element name="DS18B20" library="Eagle-JeeLabs" package="TO-92" value="TEMPERATURE-SENSOR" x="33.1" y="44.19"/>
+<element name="DS18B20" library="Eagle-JeeLabs" package="TO-92" value="TEMPERATURE-SENSOR" x="33.1" y="44.19" smashed="yes">
+<attribute name="NAME" x="36.275" y="44.825" size="0.4064" layer="25" ratio="10"/>
+</element>
 <element name="ANT1" library="discrete" package="PAD-01" value="" x="46.67" y="2.52"/>
 <element name="AMS2302" library="RHT03_DHT-22_AM2302" package="RHT03_DHT-22" value="" x="35.94" y="30.55">
 <attribute name="PROD_ID" value="SEN-10167" x="35.94" y="30.55" size="1.778" layer="27" display="off"/>
@@ -1616,49 +1621,49 @@ design rules under a new name.</description>
 <contactref element="AMS2302" pad="GND"/>
 <contactref element="C1" pad="2"/>
 <contactref element="DS18B20" pad="1"/>
+<wire x1="39.75" y1="30.55" x2="47.44" y2="35.93" width="0" layer="19" extent="1-1"/>
+<wire x1="31.83" y1="44.19" x2="39.75" y2="30.55" width="0" layer="19" extent="1-1"/>
+<wire x1="22.07" y1="37.72" x2="31.83" y2="44.19" width="0" layer="19" extent="1-1"/>
 <wire x1="6.83" y1="32.64" x2="22.07" y2="37.72" width="0" layer="19" extent="1-1"/>
 <wire x1="13.18" y1="12.32" x2="6.83" y2="32.64" width="0" layer="19" extent="1-1"/>
-<wire x1="45.5096" y1="9.89" x2="13.18" y2="12.32" width="0" layer="19" extent="1-1"/>
-<wire x1="28.95" y1="5.89" x2="45.5096" y2="9.89" width="0" layer="19" extent="1-1"/>
-<wire x1="31.83" y1="44.19" x2="28.95" y2="5.89" width="0" layer="19" extent="1-1"/>
-<wire x1="39.75" y1="30.55" x2="31.83" y2="44.19" width="0" layer="19" extent="1-1"/>
-<wire x1="47.44" y1="35.93" x2="39.75" y2="30.55" width="0" layer="19" extent="1-1"/>
+<wire x1="28.95" y1="5.89" x2="13.18" y2="12.32" width="0" layer="19" extent="1-1"/>
+<wire x1="45.5096" y1="9.89" x2="28.95" y2="5.89" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="A0">
 <contactref element="ARDUINO" pad="A0"/>
 <contactref element="DS18B20" pad="2"/>
 <contactref element="R5" pad="2"/>
-<wire x1="33.1" y1="46.095" x2="22.07" y2="30.1" width="0" layer="19" extent="1-1"/>
-<wire x1="43.44" y1="47.31" x2="33.1" y2="46.095" width="0" layer="19" extent="1-1"/>
+<wire x1="33.1" y1="46.095" x2="43.44" y2="47.31" width="0" layer="19" extent="1-1"/>
+<wire x1="22.07" y1="30.1" x2="33.1" y2="46.095" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="A1">
 <contactref element="ARDUINO" pad="A1"/>
 <contactref element="AMS2302" pad="DATA"/>
 <contactref element="R4" pad="2"/>
-<wire x1="34.67" y1="30.55" x2="22.07" y2="27.56" width="0" layer="19" extent="1-1"/>
-<wire x1="39.44" y1="35.12" x2="34.67" y2="30.55" width="0" layer="19" extent="1-1"/>
+<wire x1="34.67" y1="30.55" x2="39.44" y2="35.12" width="0" layer="19" extent="1-1"/>
+<wire x1="22.07" y1="27.56" x2="34.67" y2="30.55" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D10">
 <contactref element="ARDUINO" pad="D10"/>
 <contactref element="RFM69" pad="SEL"/>
 <contactref element="R1" pad="1"/>
-<wire x1="44.95" y1="17.89" x2="22.07" y2="12.32" width="0" layer="19" extent="1-1"/>
-<wire x1="45.74" y1="22.5" x2="44.95" y2="17.89" width="0" layer="19" extent="1-1"/>
+<wire x1="44.95" y1="17.89" x2="45.74" y2="22.5" width="0" layer="19" extent="1-1"/>
+<wire x1="22.07" y1="12.32" x2="44.95" y2="17.89" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D11">
 <contactref element="ARDUINO" pad="D11"/>
 <contactref element="RFM69" pad="SDI"/>
-<wire x1="44.95" y1="13.89" x2="22.07" y2="14.86" width="0" layer="19" extent="1-1"/>
+<wire x1="22.07" y1="14.86" x2="44.95" y2="13.89" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D12">
 <contactref element="ARDUINO" pad="D12"/>
 <contactref element="RFM69" pad="SDO"/>
-<wire x1="28.95" y1="17.89" x2="22.07" y2="17.4" width="0" layer="19" extent="1-1"/>
+<wire x1="22.07" y1="17.4" x2="28.95" y2="17.89" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D13">
 <contactref element="ARDUINO" pad="D13"/>
 <contactref element="RFM69" pad="SCK"/>
-<wire x1="44.95" y1="15.89" x2="22.07" y2="19.94" width="0" layer="19" extent="1-1"/>
+<wire x1="22.07" y1="19.94" x2="44.95" y2="15.89" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="VIN">
 <contactref element="ARDUINO" pad="RAW"/>
@@ -1675,24 +1680,50 @@ design rules under a new name.</description>
 <contactref element="RFM69" pad="VDD"/>
 <contactref element="ARDUINO" pad="VCC"/>
 <contactref element="R1" pad="2"/>
-<wire x1="44.95" y1="7.89" x2="22.07" y2="32.64" width="0" layer="19" extent="1-1"/>
-<wire x1="47.44" y1="22.5" x2="44.95" y2="7.89" width="0" layer="19" extent="1-1"/>
+<wire x1="44.95" y1="7.89" x2="47.44" y2="22.5" width="0" layer="19" extent="1-1"/>
+<wire x1="22.07" y1="32.64" x2="47.44" y2="22.5" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D5">
 <contactref element="DS18B20" pad="3"/>
 <contactref element="R5" pad="1"/>
 <contactref element="ARDUINO" pad="D5"/>
-<wire x1="34.37" y1="44.19" x2="6.83" y2="22.48" width="0" layer="19" extent="1-1"/>
-<wire x1="41.74" y1="47.31" x2="34.37" y2="44.19" width="0" layer="19" extent="1-1"/>
+<wire x1="34.37" y1="44.19" x2="41.74" y2="47.31" width="0" layer="19" extent="1-1"/>
+<wire x1="6.83" y1="22.48" x2="34.37" y2="44.19" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="D6">
 <contactref element="AMS2302" pad="VDD"/>
 <contactref element="R4" pad="1"/>
 <contactref element="ARDUINO" pad="D6"/>
-<wire x1="32.13" y1="30.55" x2="6.83" y2="19.94" width="0" layer="19" extent="1-1"/>
-<wire x1="37.74" y1="35.12" x2="32.13" y2="30.55" width="0" layer="19" extent="1-1"/>
+<wire x1="32.13" y1="30.55" x2="37.74" y2="35.12" width="0" layer="19" extent="1-1"/>
+<wire x1="6.83" y1="19.94" x2="32.13" y2="30.55" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
+<errors>
+<approved hash="18,29,b83ab4cbe48e6c58"/>
+<approved hash="18,29,061fc148dd803089"/>
+<approved hash="18,29,efc4d919ba0e30be"/>
+<approved hash="18,29,6f96588be485713a"/>
+<approved hash="18,29,7f2bb8482f80dcbd"/>
+<approved hash="18,29,4ac89c269a0ee2b2"/>
+<approved hash="18,29,595ceea578a8cf51"/>
+<approved hash="18,29,ea564fb9d9c77c28"/>
+<approved hash="18,29,d0b2ff497f4a50b1"/>
+<approved hash="18,29,b3f2c1b541b733f0"/>
+<approved hash="18,29,16baa256345280be"/>
+<approved hash="18,29,70b2c44eae4a1ab6"/>
+<approved hash="18,29,a5a1035b955c33a6"/>
+<approved hash="18,29,c3a965430f44a9ae"/>
+<approved hash="18,29,ba604564c55b3a5f"/>
+<approved hash="18,29,5d6f1520ff25b76a"/>
+<approved hash="18,29,02b91488feb4e885"/>
+<approved hash="18,29,f4ffe231f40de2c3"/>
+<approved hash="18,29,77923cadaa91e1ae"/>
+<approved hash="18,29,018a52a6389a6bb6"/>
+<approved hash="18,29,24a89d810b8fb2a6"/>
+<approved hash="18,29,d783f324192a3d8d"/>
+<approved hash="18,29,21c5059d139337cb"/>
+<approved hash="18,29,52b0f38a998438be"/>
+</errors>
 </board>
 </drawing>
 <compatibility>
