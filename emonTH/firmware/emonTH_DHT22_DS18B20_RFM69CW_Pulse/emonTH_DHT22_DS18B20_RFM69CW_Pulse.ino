@@ -321,7 +321,7 @@ void loop()
       digitalWrite(DHT22_PWR,LOW); 
     }
     
-    emonth.battery=int(analogRead(BATT_ADC)*0.03225806);                    //read battery voltage, convert ADC to volts x10
+    emonth.battery=map(analogRead(BATT_ADC), 1024, 0, 3330 ,0);              //read battery voltage, convert ADC to volts x1000g
        
     if (debug==1) 
     {
@@ -343,7 +343,7 @@ void loop()
       }
       
       Serial.print("Battery voltage: ");  
-      Serial.print(emonth.battery/10.0);
+      Serial.print(emonth.battery/1000.0);
       Serial.print("V, Pulse count: ");
       Serial.print(emonth.pulsecount);
       Serial.println("n");
